@@ -24,7 +24,7 @@ MacOS is the main platform I have been developing on. I do not believe there is 
 
 
 ### Install Go (Golang)
-Make sure to install [Go](https://golang.org/) on your system.
+Make sure to install [Go (Golang)](https://golang.org/) on your system. Instructions are found on its website.
 
 ### Compile commands
 1. `go run *.go`
