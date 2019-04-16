@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"runtime"
-	"unsafe"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
@@ -85,7 +84,12 @@ func main() {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*int(unsafe.Sizeof(vertices)), gl.Ptr(vertices), gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*SizeofFloat, gl.Ptr(vertices), gl.STATIC_DRAW)
+
+	var ebo uint32
+	gl.GenBuffers(1, &ebo)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(elements)*SizeofFloat, gl.Ptr(elements), gl.STATIC_DRAW)
 
 	posAttrib := uint32(gl.GetAttribLocation(program, gl.Str("position\x00")))
 	gl.EnableVertexAttribArray(posAttrib)
@@ -126,7 +130,8 @@ func main() {
 
 		gl.BindVertexArray(vao)
 
-		gl.DrawArrays(gl.TRIANGLES, 0, 3)
+		// gl.DrawArrays(gl.TRIANGLES, 0, 3)
+		gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
 
 		// Do OpenGL stuff.
 		window.SwapBuffers()
@@ -134,10 +139,22 @@ func main() {
 	}
 }
 
+// var vertices = []float32{
+// 	0.0, 0.5, 1.0, 0.0, 0.0, // Vertex 1 (X, Y)
+// 	0.5, -0.5, 0.0, 1.0, 0.0, // Vertex 2 (X, Y)
+// 	-0.5, -0.5, 0.0, 0.0, 1.0, // Vertex 3 (X, Y)
+// }
+
 var vertices = []float32{
-	0.0, 0.5, 1.0, 0.0, 0.0, // Vertex 1 (X, Y)
-	0.5, -0.5, 0.0, 1.0, 0.0, // Vertex 2 (X, Y)
-	-0.5, -0.5, 0.0, 0.0, 1.0, // Vertex 3 (X, Y)
+	-0.5, 0.5, 1.0, 0.0, 0.0, // Top-left
+	0.5, 0.5, 0.0, 1.0, 0.0, // Top-right
+	0.5, -0.5, 0.0, 0.0, 1.0, // Bottom-right
+	-0.5, -0.5, 1.0, 1.0, 1.0, // Bottom-left
+}
+
+var elements = []uint32{
+	0, 1, 2,
+	2, 3, 0,
 }
 
 // var cubeVertices = []float32{
