@@ -1,0 +1,30 @@
+# GoEngine3D
+
+An early work in progress project on making a 3D graphics engine using Go and OpenGL.
+
+I have know knowledge on graphics programming, so this project is mainly a learning project for myself.
+
+## Verisons / Packages
+OpenGL v4.1
+(go-gl/gl)[https://github.com/go-gl/gl]
+
+## Installation
+
+### Windows
+To get this application running on a Windows machine you will need to install a gcc compiler.
+I used (MinGW)[https://mingw-w64.org/doku.php], but there are many other options to use.
+Also don't forget to link the gcc commands in your System Environment Variables.
+
+### MacOS
+MacOS is the main platform I have been developing on. I do not believe there is anything you needed to be installed before compiling.
+
+### Linux
+*Untested*
+
+
+
+Make sure to install (Go)[https://golang.org/] on your system.
+
+### Compile commands
+1. `go run *.go`
+2. `go build -o <name>` then run your executable
