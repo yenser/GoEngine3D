@@ -6,13 +6,13 @@ I have know knowledge on graphics programming, so this project is mainly a learn
 
 ## Verisons / Packages
 OpenGL v4.1
-(go-gl/gl)[https://github.com/go-gl/gl]
+[go-gl/gl](https://github.com/go-gl/gl)
 
 ## Installation
 
 ### Windows
 To get this application running on a Windows machine you will need to install a gcc compiler.
-I used (MinGW)[https://mingw-w64.org/doku.php], but there are many other options to use.
+I used [MinGW](https://mingw-w64.org/doku.php), but there are many other options to use.
 Also don't forget to link the gcc commands in your System Environment Variables.
 
 ### MacOS
@@ -23,7 +23,7 @@ MacOS is the main platform I have been developing on. I do not believe there is 
 
 
 
-Make sure to install (Go)[https://golang.org/] on your system.
+Make sure to install [Go](https://golang.org/) on your system.
 
 ### Compile commands
 1. `go run *.go`
