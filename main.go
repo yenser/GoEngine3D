@@ -76,25 +76,45 @@ func main() {
 
 	gl.BindFragDataLocation(program, 0, gl.Str("outputColor\x00"))
 
-	// Configure the vertex data
+	// Declare Vertex Array Object
 	var vao uint32
 	gl.GenVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
 
+	// Declare Vertex Buffer Object
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*SizeofFloat, gl.Ptr(vertices), gl.STATIC_DRAW)
 
+	// Declare Element Buffer Object
 	var ebo uint32
 	gl.GenBuffers(1, &ebo)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(elements)*SizeofFloat, gl.Ptr(elements), gl.STATIC_DRAW)
 
+	// Declare Texture
+	var tex uint32
+	gl.GenTextures(1, &tex)
+	gl.BindTexture(gl.TEXTURE_2D, tex)
+
+	// (x, y, z) => (s, t, r)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
+
+	gl.TexParameterfv(gl.TEXTURE_2D, gl.TEXTURE_BORDER_COLOR, &color)
+
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB, 2, 2, 0, gl.RGB, gl.FLOAT, gl.Ptr(pixels))
+
+	// Position Attribute
 	posAttrib := uint32(gl.GetAttribLocation(program, gl.Str("position\x00")))
 	gl.EnableVertexAttribArray(posAttrib)
 	gl.VertexAttribPointer(posAttrib, 2, gl.FLOAT, false, 5*SizeofFloat, gl.PtrOffset(0))
 
+	// Color Attribute
 	colAttrib := uint32(gl.GetAttribLocation(program, gl.Str("color\x00")))
 	gl.EnableVertexAttribArray(colAttrib)
 	gl.VertexAttribPointer(colAttrib, 3, gl.FLOAT, false, 5*SizeofFloat, gl.PtrOffset(2*SizeofFloat))
@@ -155,6 +175,18 @@ var vertices = []float32{
 var elements = []uint32{
 	0, 1, 2,
 	2, 3, 0,
+}
+
+var color = float32(1.0)
+
+// var color = []float32{
+// 	1.0, 0.0, 0.0, 1.0,
+// }
+
+// Black/white checkerboard
+var pixels = []float32{
+	0.0, 0.0, 0.0, 1.0, 1.0, 1.0,
+	1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
 }
 
 // var cubeVertices = []float32{
