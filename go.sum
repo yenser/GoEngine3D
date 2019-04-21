@@ -4,6 +4,7 @@ github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1 h1:QbL/5oDUmRBzO9/Z7Seo
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/mathgl v0.0.0-20190415092908-39e6cc4dcc59 h1:2I4KRlwcAwIpO5wSyrsIaJYRH6ef/UecJyA5ffVbRyE=
 github.com/go-gl/mathgl v0.0.0-20190415092908-39e6cc4dcc59/go.mod h1:yhpkQzEiH9yPyxDUGzkmgScbaBVlhC06qodikEM0ZwQ=
+github.com/go-gl/mathgl v0.0.0-20190416160123-c4601bc793c7 h1:THttjeRn1iiz69E875U6gAik8KTWk/JYAHoSVpUxBBI=
 github.com/vulkan-go/asche v0.0.0-20180829094422-80bb1ffa728a h1:jyRdhX+/Fvuv5zNod60X1MKvkCy/XGCyNkcyJ7GnZaU=
 github.com/vulkan-go/asche v0.0.0-20180829094422-80bb1ffa728a/go.mod h1:fIbNY6YffQRtdF22h26OXRprI/BGOWPKlxJWtNC78OA=
 github.com/vulkan-go/demos v0.0.0-20190321114819-13622f8f3baa h1:XXJu08CZgQ+mqtFYJINHBf2Jiya2s1S/KC6LBQSZzMQ=

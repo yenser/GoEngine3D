@@ -8,6 +8,7 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
+	glm "github.com/go-gl/mathgl/mgl32"
 	shaders "github.com/yenser/GoEngine3D/shaders"
 )
 
@@ -62,11 +63,11 @@ func main() {
 	// set color variable to uniColor
 	// uniColor := gl.GetUniformLocation(program, gl.Str("triangleColor\x00"))
 
-	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(windowWidth)/windowHeight, 0.1, 10.0)
+	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(windowWidth)/windowHeight, 1.0, 10.0)
 	projectionUniform := gl.GetUniformLocation(program, gl.Str("projection\x00"))
 	gl.UniformMatrix4fv(projectionUniform, 1, false, &projection[0])
 
-	camera := mgl32.LookAtV(mgl32.Vec3{3, 3, 3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 1, 0})
+	camera := mgl32.LookAtV(mgl32.Vec3{1.2, 1.2, 1.2}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 0, 1})
 	cameraUniform := gl.GetUniformLocation(program, gl.Str("camera\x00"))
 	gl.UniformMatrix4fv(cameraUniform, 1, false, &camera[0])
 
@@ -74,6 +75,7 @@ func main() {
 	modelUniform := gl.GetUniformLocation(program, gl.Str("model\x00"))
 	gl.UniformMatrix4fv(modelUniform, 1, false, &model[0])
 
+	// bind Frag Data Location
 	gl.BindFragDataLocation(program, 0, gl.Str("outputColor\x00"))
 
 	// Declare Vertex Array Object
@@ -94,50 +96,48 @@ func main() {
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(elements)*SizeofFloat, gl.Ptr(elements), gl.STATIC_DRAW)
 
 	// Declare Texture
-	var tex uint32
-	gl.GenTextures(1, &tex)
-	gl.BindTexture(gl.TEXTURE_2D, tex)
-
-	// (x, y, z) => (s, t, r)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-
-	gl.TexParameterfv(gl.TEXTURE_2D, gl.TEXTURE_BORDER_COLOR, &color)
-
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB, 2, 2, 0, gl.RGB, gl.FLOAT, gl.Ptr(pixels))
+	texture, err := newTexture("./textures/diamonds.png")
+	// texture, err := newTexture("./textures/texture.jpg")
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	// Position Attribute
 	posAttrib := uint32(gl.GetAttribLocation(program, gl.Str("position\x00")))
 	gl.EnableVertexAttribArray(posAttrib)
-	gl.VertexAttribPointer(posAttrib, 2, gl.FLOAT, false, 5*SizeofFloat, gl.PtrOffset(0))
+	gl.VertexAttribPointer(posAttrib, 2, gl.FLOAT, false, 7*SizeofFloat, gl.PtrOffset(0))
 
 	// Color Attribute
 	colAttrib := uint32(gl.GetAttribLocation(program, gl.Str("color\x00")))
 	gl.EnableVertexAttribArray(colAttrib)
-	gl.VertexAttribPointer(colAttrib, 3, gl.FLOAT, false, 5*SizeofFloat, gl.PtrOffset(2*SizeofFloat))
+	gl.VertexAttribPointer(colAttrib, 3, gl.FLOAT, false, 7*SizeofFloat, gl.PtrOffset(2*SizeofFloat))
+
+	// Texture Attribute
+	texAttrib := uint32(gl.GetAttribLocation(program, gl.Str("texcoord\x00")))
+	gl.EnableVertexAttribArray(texAttrib)
+	gl.VertexAttribPointer(texAttrib, 2, gl.FLOAT, false, 7*SizeofFloat, gl.PtrOffset(5*SizeofFloat))
 
 	// set clear window color
 	gl.ClearColor(0.0, 0.0, 0.0, 1.0)
 
 	// check for errors before main window
 	glErr := gl.GetError()
-	if glErr != gl.NO_ERROR {
-		fmt.Printf("Error: %v\n", err)
-	}
+	fmt.Printf("Error Code: %v\n", glErr)
 
-	// previousTime := glfw.GetTime()
+	angle := 0.0
+	previousTime := glfw.GetTime()
 
 	// main run buffer
 	for !window.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 		// Update
-		// time := glfw.GetTime()
-		// elapsed := time - previousTime
-		// previousTime = time
+		time := glfw.GetTime()
+		elapsed := time - previousTime
+		previousTime = time
+
+		angle += elapsed
+		model = mgl32.HomogRotate3D(float32(angle), glm.Vec3{0, 0, 1})
 
 		// red := float32((math.Sin(time*4.0) + 1.0) / 2.0)
 		// green := float32(0.0)
@@ -148,7 +148,13 @@ func main() {
 		// render
 		gl.UseProgram(program)
 
+		gl.UniformMatrix4fv(modelUniform, 1, false, &model[0])
+
 		gl.BindVertexArray(vao)
+
+		// activate and bind texture
+		gl.ActiveTexture(gl.TEXTURE0)
+		gl.BindTexture(gl.TEXTURE_2D, texture)
 
 		// gl.DrawArrays(gl.TRIANGLES, 0, 3)
 		gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
@@ -166,18 +172,16 @@ func main() {
 // }
 
 var vertices = []float32{
-	-0.5, 0.5, 1.0, 0.0, 0.0, // Top-left
-	0.5, 0.5, 0.0, 1.0, 0.0, // Top-right
-	0.5, -0.5, 0.0, 0.0, 1.0, // Bottom-right
-	-0.5, -0.5, 1.0, 1.0, 1.0, // Bottom-left
+	-0.5, 0.5, 1.0, 0.0, 0.0, 0.0, 0.0, // Top-left
+	0.5, 0.5, 0.0, 1.0, 0.0, 1.0, 0.0, // Top-right
+	0.5, -0.5, 0.0, 0.0, 1.0, 1.0, 1.0, // Bottom-right
+	-0.5, -0.5, 1.0, 1.0, 1.0, 0.0, 1.0, // Bottom-left
 }
 
 var elements = []uint32{
 	0, 1, 2,
 	2, 3, 0,
 }
-
-var color = float32(1.0)
 
 // var color = []float32{
 // 	1.0, 0.0, 0.0, 1.0,
