@@ -33,4 +33,4 @@ Make sure to install [Go (Golang)](https://golang.org/) on your system. Instruct
 
 # Timeline
 ### Creating a 3D plane
-![3D Plane](/docs/3dPlane.png)
+![3D Plane](/documentation/3dPlane.png)
