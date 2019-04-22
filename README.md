@@ -31,6 +31,6 @@ Make sure to install [Go (Golang)](https://golang.org/) on your system. Instruct
 2. `go build -o <name>` then run your executable
 
 
-# Timeline
-### Creating a 3D plane
+# My Progress
+### Creating a 3D plane - April 19th, 2019
 ![3D Plane](/documentation/3dPlane.png)
