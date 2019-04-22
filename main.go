@@ -15,6 +15,8 @@ import (
 const (
 	windowHeight = 600
 	windowWidth  = 800
+	windowTitle  = "GoEngine3D"
+	enableMSAA   = true
 )
 
 const SizeofFloat = 4.0
@@ -35,8 +37,11 @@ func main() {
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
+	if enableMSAA {
+		glfw.WindowHint(glfw.Samples, 4)
+	}
 
-	window, err := glfw.CreateWindow(windowWidth, windowHeight, "GoEngine3D", nil, nil)
+	window, err := glfw.CreateWindow(windowWidth, windowHeight, windowTitle, nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -120,12 +125,19 @@ func main() {
 	// set clear window color
 	gl.ClearColor(0.0, 0.0, 0.0, 1.0)
 
+	// set multisampling
+	if enableMSAA {
+		gl.Enable(gl.MULTISAMPLE)
+	}
+
 	// check for errors before main window
 	glErr := gl.GetError()
 	fmt.Printf("Error Code: %v\n", glErr)
 
 	angle := 0.0
 	previousTime := glfw.GetTime()
+	lastTime := previousTime
+	nbFrames := 0
 
 	// main run buffer
 	for !window.ShouldClose() {
@@ -138,6 +150,14 @@ func main() {
 
 		angle += elapsed
 		model = mgl32.HomogRotate3D(float32(angle), glm.Vec3{0, 0, 1})
+
+		nbFrames++
+		if (time - lastTime) >= 1.0 {
+			title := fmt.Sprintf("%v %v ms/frame", windowTitle, 1000.0/nbFrames)
+			window.SetTitle(title)
+			nbFrames = 0
+			lastTime += 1.0
+		}
 
 		// red := float32((math.Sin(time*4.0) + 1.0) / 2.0)
 		// green := float32(0.0)
