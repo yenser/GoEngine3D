@@ -3,7 +3,7 @@ package shaders
 var VertexShader = `
 #version 410 core
 
-in vec2 position;
+in vec3 position;
 in vec3 color;
 in vec2 texcoord;
 
@@ -18,6 +18,6 @@ void main()
 {
     Color = color;
     Texcoord = texcoord;
-    gl_Position = projection * camera * model * vec4(position, 0.0, 1.0);
+    gl_Position = projection * camera * model * vec4(position, 1.0);
 }
 ` + "\x00"

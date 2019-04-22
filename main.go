@@ -95,10 +95,10 @@ func main() {
 	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*SizeofFloat, gl.Ptr(vertices), gl.STATIC_DRAW)
 
 	// Declare Element Buffer Object
-	var ebo uint32
-	gl.GenBuffers(1, &ebo)
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
-	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(elements)*SizeofFloat, gl.Ptr(elements), gl.STATIC_DRAW)
+	// var ebo uint32
+	// gl.GenBuffers(1, &ebo)
+	// gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
+	// gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(elements)*SizeofFloat, gl.Ptr(elements), gl.STATIC_DRAW)
 
 	// Declare Texture
 	texture, err := newTexture("./textures/diamonds.png")
@@ -110,17 +110,17 @@ func main() {
 	// Position Attribute
 	posAttrib := uint32(gl.GetAttribLocation(program, gl.Str("position\x00")))
 	gl.EnableVertexAttribArray(posAttrib)
-	gl.VertexAttribPointer(posAttrib, 2, gl.FLOAT, false, 7*SizeofFloat, gl.PtrOffset(0))
+	gl.VertexAttribPointer(posAttrib, 3, gl.FLOAT, false, 8*SizeofFloat, gl.PtrOffset(0))
 
 	// Color Attribute
 	colAttrib := uint32(gl.GetAttribLocation(program, gl.Str("color\x00")))
 	gl.EnableVertexAttribArray(colAttrib)
-	gl.VertexAttribPointer(colAttrib, 3, gl.FLOAT, false, 7*SizeofFloat, gl.PtrOffset(2*SizeofFloat))
+	gl.VertexAttribPointer(colAttrib, 3, gl.FLOAT, false, 8*SizeofFloat, gl.PtrOffset(3*SizeofFloat))
 
 	// Texture Attribute
 	texAttrib := uint32(gl.GetAttribLocation(program, gl.Str("texcoord\x00")))
 	gl.EnableVertexAttribArray(texAttrib)
-	gl.VertexAttribPointer(texAttrib, 2, gl.FLOAT, false, 7*SizeofFloat, gl.PtrOffset(5*SizeofFloat))
+	gl.VertexAttribPointer(texAttrib, 2, gl.FLOAT, false, 8*SizeofFloat, gl.PtrOffset(6*SizeofFloat))
 
 	// set clear window color
 	gl.ClearColor(0.0, 0.0, 0.0, 1.0)
@@ -176,8 +176,8 @@ func main() {
 		gl.ActiveTexture(gl.TEXTURE0)
 		gl.BindTexture(gl.TEXTURE_2D, texture)
 
-		// gl.DrawArrays(gl.TRIANGLES, 0, 3)
-		gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
+		gl.DrawArrays(gl.TRIANGLES, 0, 3)
+		// gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
 
 		// Do OpenGL stuff.
 		window.SwapBuffers()
@@ -192,10 +192,11 @@ func main() {
 // }
 
 var vertices = []float32{
-	-0.5, 0.5, 1.0, 0.0, 0.0, 0.0, 0.0, // Top-left
-	0.5, 0.5, 0.0, 1.0, 0.0, 1.0, 0.0, // Top-right
-	0.5, -0.5, 0.0, 0.0, 1.0, 1.0, 1.0, // Bottom-right
-	-0.5, -0.5, 1.0, 1.0, 1.0, 0.0, 1.0, // Bottom-left
+	// X    Y    Z    R    G    B    U    V
+	-0.5, 0.5, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+	0.5, 0.5, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0,
+	0.5, -0.5, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0,
+	-0.5, -0.5, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
 }
 
 var elements = []uint32{
