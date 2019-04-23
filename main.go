@@ -66,13 +66,13 @@ func main() {
 	gl.UseProgram(program)
 
 	// set color variable to uniColor
-	// uniColor := gl.GetUniformLocation(program, gl.Str("triangleColor\x00"))
+	uniColor := gl.GetUniformLocation(program, gl.Str("overrideColor\x00"))
 
 	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(windowWidth)/windowHeight, 1.0, 10.0)
 	projectionUniform := gl.GetUniformLocation(program, gl.Str("projection\x00"))
 	gl.UniformMatrix4fv(projectionUniform, 1, false, &projection[0])
 
-	camera := mgl32.LookAtV(mgl32.Vec3{2, 2, 2}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 0, 1})
+	camera := mgl32.LookAtV(mgl32.Vec3{3, 3, 3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 0, 1})
 	cameraUniform := gl.GetUniformLocation(program, gl.Str("camera\x00"))
 	gl.UniformMatrix4fv(cameraUniform, 1, false, &camera[0])
 
@@ -123,7 +123,7 @@ func main() {
 	gl.VertexAttribPointer(texAttrib, 2, gl.FLOAT, false, 8*SizeofFloat, gl.PtrOffset(6*SizeofFloat))
 
 	// set clear window color
-	gl.ClearColor(0.0, 0.0, 0.0, 1.0)
+	gl.ClearColor(1.0, 1.0, 1.0, 1.0)
 
 	// set multisampling
 	if enableMSAA {
@@ -139,9 +139,7 @@ func main() {
 	lastTime := previousTime
 	nbFrames := 0
 
-	gl.Enable(gl.DEPTH_TEST)
-	gl.Enable(gl.STENCIL_TEST)
-	gl.StencilFunc(gl.GEQUAL, 2, 0xFF)
+	gl.Enable(gl.DEPTH_TEST) // enable Z-buffer
 
 	// main run buffer
 	for !window.ShouldClose() {
@@ -153,7 +151,6 @@ func main() {
 		previousTime = time
 
 		angle += elapsed
-		model = mgl32.HomogRotate3D(float32(angle), glm.Vec3{0, 0, 1})
 
 		nbFrames++
 		if (time - lastTime) >= 1.0 {
@@ -163,30 +160,52 @@ func main() {
 			lastTime += 1.0
 		}
 
-		// red := float32((math.Sin(time*4.0) + 1.0) / 2.0)
-		// green := float32(0.0)
-		// blue := float32(0.0)
-
-		// gl.Uniform3(uniColor, red, green, blue) // red
-
 		// render
 		gl.UseProgram(program)
 
+		// Draw cube and floor
+		model = glm.HomogRotate3D(float32(angle), glm.Vec3{0, 0, 1})
 		gl.UniformMatrix4fv(modelUniform, 1, false, &model[0])
+		gl.DrawArrays(gl.TRIANGLES, 0, 36)
 
+		gl.Enable(gl.STENCIL_TEST)
+
+		// Draw Floor
+		gl.StencilFunc(gl.ALWAYS, 1, 0xFF)
+		gl.StencilOp(gl.KEEP, gl.KEEP, gl.REPLACE)
+		gl.StencilMask(0xFF)
+		gl.DepthMask(false)
+		gl.Clear(gl.STENCIL_BUFFER_BIT)
+
+		gl.DrawArrays(gl.TRIANGLES, 36, 6)
+
+		// Draw reflection
+		gl.StencilFunc(gl.EQUAL, 1, 0xFF)
+		gl.StencilMask(0x00)
+		gl.DepthMask(true)
+
+		model = model.Mul4(glm.Translate3D(0, 0, -1))
+		gl.UniformMatrix4fv(modelUniform, 1, false, &model[0])
+		gl.Uniform3f(uniColor, 0.3, 0.3, 0.3)
+		gl.DrawArrays(gl.TRIANGLES, 0, 36)
+		gl.Uniform3f(uniColor, 1, 1, 1)
+
+		gl.Disable(gl.STENCIL_TEST)
+
+		// bind vertex array
 		gl.BindVertexArray(vao)
 
 		// activate and bind texture
 		gl.ActiveTexture(gl.TEXTURE0)
 		gl.BindTexture(gl.TEXTURE_2D, texture)
 
-		gl.DrawArrays(gl.TRIANGLES, 0, 36)
 		// gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
 
 		// Do OpenGL stuff.
 		window.SwapBuffers()
 		glfw.PollEvents()
 	}
+
 }
 
 // var vertices = []float32{
@@ -240,6 +259,14 @@ var vertices = []float32{
 	0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0, 0.0,
 	-0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 0.0, 0.0,
 	-0.5, 0.5, -0.5, 1.0, 1.0, 1.0, 0.0, 1.0,
+
+	// black floor
+	-1.0, -1.0, -0.5, 0.0, 0.0, 0.0, 0.0, 0.0,
+	1.0, -1.0, -0.5, 0.0, 0.0, 0.0, 1.0, 0.0,
+	1.0, 1.0, -0.5, 0.0, 0.0, 0.0, 1.0, 1.0,
+	1.0, 1.0, -0.5, 0.0, 0.0, 0.0, 1.0, 1.0,
+	-1.0, 1.0, -0.5, 0.0, 0.0, 0.0, 0.0, 1.0,
+	-1.0, -1.0, -0.5, 0.0, 0.0, 0.0, 0.0, 0.0,
 }
 
 var elements = []uint32{

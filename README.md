@@ -34,3 +34,6 @@ Make sure to install [Go (Golang)](https://golang.org/) on your system. Instruct
 # My Progress
 ### Creating a 3D plane - April 19th, 2019
 ![3D Plane](/documentation/3dPlane.png)
+
+### Creating a reflective floor with stencils - April 23rd, 2019
+![Reflective Floor](/documentation/reflectiveFloor.png)
