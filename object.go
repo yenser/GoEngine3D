@@ -10,9 +10,9 @@ import (
 
 // Object is a 3D model
 type Object struct {
-	FileLocation string,
-	Vertices []float32,
-	Elements []uint32,
+	FileLocation string
+	Vertices     []float32
+	Elements     []uint32
 }
 
 // Init object

@@ -143,19 +143,10 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 		// Update
-		time := glfw.GetTime()
-		elapsed := time - previousTime
-		previousTime = time
-
+		time, elapsed := getTime(&previousTime)
 		angle += elapsed
 
-		nbFrames++
-		if (time - lastTime) >= 1.0 {
-			title := fmt.Sprintf("%v %v ms/frame", windowTitle, 1000.0/nbFrames)
-			window.SetTitle(title)
-			nbFrames = 0
-			lastTime += 1.0
-		}
+		updateWindowTitle(window, &time, &lastTime, &nbFrames)
 
 		// render
 		gl.UseProgram(program)
@@ -189,9 +180,6 @@ func main() {
 
 		// gl.Disable(gl.STENCIL_TEST)
 
-		// bind vertex array
-		gl.BindVertexArray(vao)
-
 		// activate and bind texture
 		// gl.ActiveTexture(gl.TEXTURE0)
 		// gl.BindTexture(gl.TEXTURE_2D, texture)
@@ -202,5 +190,23 @@ func main() {
 		// Do OpenGL stuff.
 		window.SwapBuffers()
 		glfw.PollEvents()
+	}
+}
+
+func getTime(previousTime *float64) (float64, float64) {
+	time := glfw.GetTime()
+	elapsed := time - *previousTime
+	*previousTime = time
+
+	return time, elapsed
+}
+
+func updateWindowTitle(window *glfw.Window, time, lastTime *float64, nbFrames *int) {
+	*nbFrames++
+	if (*time - *lastTime) >= 1.0 {
+		title := fmt.Sprintf("%v %v FPS | %v ms/frame", windowTitle, *nbFrames, 1000.0 / *nbFrames)
+		window.SetTitle(title)
+		*nbFrames = 0
+		*lastTime += 1.0
 	}
 }
