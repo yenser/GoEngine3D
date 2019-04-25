@@ -91,9 +91,7 @@ func main() {
 	gl.BindFragDataLocation(program, 0, gl.Str("outputColor\x00"))
 
 	// Declare Vertex Array Object
-	var vao uint32
-	gl.GenVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
+	buildVAO()
 
 	// Declare Vertex Buffer Object
 	var vbo uint32

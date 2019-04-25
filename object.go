@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -11,14 +10,18 @@ import (
 
 // Object is a 3D model
 type Object struct {
-	FileLocation string
+	FileLocation string,
+	Vertices []float32,
+	Elements []uint32,
 }
 
 // Init object
 func (o Object) Init() ([]float32, []uint32) {
 	vert, elem := parseObjFile(o.FileLocation)
-	fmt.Println(vert)
-	fmt.Println(elem)
+	o.Vertices = vert
+	o.Elements = elem
+	// fmt.Println(vert)
+	// fmt.Println(elem)
 	return vert, elem
 }
 
