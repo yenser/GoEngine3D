@@ -16,7 +16,8 @@ const (
 	windowHeight = 600
 	windowWidth  = 800
 	windowTitle  = "GoEngine3D"
-	enableMSAA   = true
+	enableMSAA   = false
+	viewDistance = 100.0
 )
 
 const SizeofFloat = 4.0
@@ -27,6 +28,12 @@ func init() {
 }
 
 func main() {
+
+	ship := Object{
+		FileLocation: "./objects/ship.obj",
+	}
+	vertices, elements := ship.Init()
+
 	if err := glfw.Init(); err != nil {
 		log.Fatalln("failed to initialize glfw:", err.Error())
 	}
@@ -66,13 +73,13 @@ func main() {
 	gl.UseProgram(program)
 
 	// set color variable to uniColor
-	uniColor := gl.GetUniformLocation(program, gl.Str("overrideColor\x00"))
+	// uniColor := gl.GetUniformLocation(program, gl.Str("overrideColor\x00"))
 
-	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(windowWidth)/windowHeight, 1.0, 10.0)
+	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(windowWidth)/windowHeight, 1.0, viewDistance)
 	projectionUniform := gl.GetUniformLocation(program, gl.Str("projection\x00"))
 	gl.UniformMatrix4fv(projectionUniform, 1, false, &projection[0])
 
-	camera := mgl32.LookAtV(mgl32.Vec3{3, 3, 3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 0, 1})
+	camera := mgl32.LookAtV(mgl32.Vec3{20, 3, 3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 0, 1})
 	cameraUniform := gl.GetUniformLocation(program, gl.Str("camera\x00"))
 	gl.UniformMatrix4fv(cameraUniform, 1, false, &camera[0])
 
@@ -95,28 +102,28 @@ func main() {
 	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*SizeofFloat, gl.Ptr(vertices), gl.STATIC_DRAW)
 
 	// Declare Element Buffer Object
-	// var ebo uint32
-	// gl.GenBuffers(1, &ebo)
-	// gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
-	// gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(elements)*SizeofFloat, gl.Ptr(elements), gl.STATIC_DRAW)
+	var ebo uint32
+	gl.GenBuffers(1, &ebo)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(elements)*SizeofFloat, gl.Ptr(elements), gl.STATIC_DRAW)
 
 	// Declare Texture
-	texture, err := newTexture("./textures/diamonds.png")
-	if err != nil {
-		log.Fatalln(err)
-	}
+	// texture, err := newTexture("./textures/diamonds.png")
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
 
 	// Position Attribute
-	createPositionAttribute(program, "position\x00", 3, 8, 0)
+	createPositionAttribute(program, "position\x00", 3, 3, 0)
 
 	// Color Attribute
-	createColorAttribute(program, "color\x00", 3, 8, 3)
+	// createColorAttribute(program, "color\x00", 3, 8, 3)
 
 	// Texture Attribute
-	createTextureAttribute(program, "texcoord\x00", 2, 8, 6)
+	// createTextureAttribute(program, "texcoord\x00", 2, 8, 6)
 
 	// set clear window color
-	gl.ClearColor(1.0, 1.0, 1.0, 1.0)
+	gl.ClearColor(0, 0, 0, 1)
 
 	// set multisampling
 	if enableMSAA {
@@ -133,7 +140,6 @@ func main() {
 	nbFrames := 0
 
 	gl.Enable(gl.DEPTH_TEST) // enable Z-buffer
-
 	// main run buffer
 	for !window.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
@@ -157,46 +163,46 @@ func main() {
 		gl.UseProgram(program)
 
 		// Draw cube and floor
-		model = glm.HomogRotate3D(float32(angle), glm.Vec3{0, 0, 1})
+		model = glm.HomogRotate3D(float32(angle), glm.Vec3{0.5, 0, 1})
 		gl.UniformMatrix4fv(modelUniform, 1, false, &model[0])
-		gl.DrawArrays(gl.TRIANGLES, 0, 36)
+		// gl.DrawArrays(gl.TRIANGLES, 0, 36)
 
-		gl.Enable(gl.STENCIL_TEST)
+		// gl.Enable(gl.STENCIL_TEST)
 
 		// Draw Floor
-		gl.StencilFunc(gl.ALWAYS, 1, 0xFF)
-		gl.StencilOp(gl.KEEP, gl.KEEP, gl.REPLACE)
-		gl.StencilMask(0xFF)
-		gl.DepthMask(false)
-		gl.Clear(gl.STENCIL_BUFFER_BIT)
+		// gl.StencilFunc(gl.ALWAYS, 1, 0xFF)
+		// gl.StencilOp(gl.KEEP, gl.KEEP, gl.REPLACE)
+		// gl.StencilMask(0xFF)
+		// gl.DepthMask(false)
+		// gl.Clear(gl.STENCIL_BUFFER_BIT)
 
-		gl.DrawArrays(gl.TRIANGLES, 36, 6)
+		// gl.DrawArrays(gl.TRIANGLES, 36, 6)
 
 		// Draw reflection
-		gl.StencilFunc(gl.EQUAL, 1, 0xFF)
-		gl.StencilMask(0x00)
-		gl.DepthMask(true)
+		// gl.StencilFunc(gl.EQUAL, 1, 0xFF)
+		// gl.StencilMask(0x00)
+		// gl.DepthMask(true)
 
-		model = model.Mul4(glm.Translate3D(0, 0, -1))
-		gl.UniformMatrix4fv(modelUniform, 1, false, &model[0])
-		gl.Uniform3f(uniColor, 0.3, 0.3, 0.3)
-		gl.DrawArrays(gl.TRIANGLES, 0, 36)
-		gl.Uniform3f(uniColor, 1, 1, 1)
+		// model = model.Mul4(glm.Translate3D(0, 0, -1))
+		// gl.UniformMatrix4fv(modelUniform, 1, false, &model[0])
+		// gl.Uniform3f(uniColor, 0.3, 0.3, 0.3)
+		// gl.DrawArrays(gl.TRIANGLES, 0, 36)
+		// gl.Uniform3f(uniColor, 1, 1, 1)
 
-		gl.Disable(gl.STENCIL_TEST)
+		// gl.Disable(gl.STENCIL_TEST)
 
 		// bind vertex array
 		gl.BindVertexArray(vao)
 
 		// activate and bind texture
-		gl.ActiveTexture(gl.TEXTURE0)
-		gl.BindTexture(gl.TEXTURE_2D, texture)
+		// gl.ActiveTexture(gl.TEXTURE0)
+		// gl.BindTexture(gl.TEXTURE_2D, texture)
 
-		// gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
+		// gl.DrawArrays(gl.TRIANGLES, 0, int32(len(vertices)))
+		gl.DrawElements(gl.TRIANGLES, int32(len(elements)), gl.UNSIGNED_INT, gl.PtrOffset(0))
 
 		// Do OpenGL stuff.
 		window.SwapBuffers()
 		glfw.PollEvents()
 	}
-
 }
