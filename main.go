@@ -16,7 +16,7 @@ const (
 	windowHeight = 600
 	windowWidth  = 800
 	windowTitle  = "GoEngine3D"
-	enableMSAA   = false
+	enableMSAA   = true
 	viewDistance = 100.0
 )
 
@@ -73,7 +73,10 @@ func main() {
 	gl.UseProgram(program)
 
 	// set color variable to uniColor
-	// uniColor := gl.GetUniformLocation(program, gl.Str("overrideColor\x00"))
+	objectColor := gl.GetUniformLocation(program, gl.Str("objectColor\x00"))
+	lightColor := gl.GetUniformLocation(program, gl.Str("lightColor\x00"))
+	gl.Uniform3f(objectColor, 1, 0.5, 0.31)
+	gl.Uniform3f(lightColor, 1, 1, 1)
 
 	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(windowWidth)/windowHeight, 1.0, viewDistance)
 	projectionUniform := gl.GetUniformLocation(program, gl.Str("projection\x00"))
