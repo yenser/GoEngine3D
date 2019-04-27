@@ -30,7 +30,7 @@ func init() {
 func main() {
 
 	ship := Object{
-		FileLocation: "./objects/ship.obj",
+		FileLocation: "./objects/shipWithNormals.obj",
 	}
 	vertices, elements := ship.Init()
 

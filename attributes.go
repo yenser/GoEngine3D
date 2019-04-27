@@ -25,3 +25,11 @@ func createTextureAttribute(program uint32, name string, size, stride int32, off
 	gl.VertexAttribPointer(texAttrib, size, gl.FLOAT, false, stride*4, gl.PtrOffset(offset*4))
 	return texAttrib
 }
+
+// Normal Attribute
+func createNormalAttribute(program uint32, name string, size, stride int32, offset int) uint32 {
+	normAttrib := uint32(gl.GetAttribLocation(program, gl.Str(name)))
+	gl.EnableVertexAttribArray(normAttrib)
+	gl.VertexAttribPointer(normAttrib, size, gl.FLOAT, false, stride*4, gl.PtrOffset(offset*4))
+	return normAttrib
+}

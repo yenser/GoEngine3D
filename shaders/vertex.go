@@ -4,6 +4,7 @@ var VertexShader = `
 #version 410 core
 
 in vec3 position;
+in vec3 normal;
 
 out vec3 Color;
 out vec3 FragPos;
@@ -17,6 +18,6 @@ void main()
 {
     gl_Position = projection * camera * model * vec4(position, 1.0);
     FragPos = vec3(model * vec4(1.0));
-    Normal = normalize(model);
+    Normal = normal;
 }
 ` + "\x00"
